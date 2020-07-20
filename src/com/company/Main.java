@@ -104,8 +104,8 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException {
-        double width = 1;
-        double spacing = 0.2;
+        double width = 2;
+        double spacing = 1;
     Shape original_shape = getShapeFromSVG("test3.svg");
     ArrayList<Quadrilateral> l = createListOfQuadrilaterals(original_shape,width);
     PathIterator pathIterator = original_shape.getPathIterator(new AffineTransform());
