@@ -92,19 +92,19 @@
        inkscape:collect="always"
        xlink:href="#linearGradient2343"
        id="linearGradient2379"
-       x1="86.08596"
-       y1="224.36545"
-       x2="177.51207"
-       y2="201.87585"
+       x1="35.171116"
+       y1="232.51717"
+       x2="179.24933"
+       y2="202.54402"
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient2417"
        id="linearGradient2421"
-       x1="92.926292"
+       x1="36.988827"
        y1="215.47018"
-       x2="206.59904"
-       y2="189.91019"
+       x2="290.20233"
+       y2="180.21706"
        gradientUnits="userSpaceOnUse" />
     <filter
        inkscape:collect="always"
@@ -121,10 +121,10 @@
        xlink:href="#linearGradient2417"
        id="linearGradient2434"
        gradientUnits="userSpaceOnUse"
-       x1="274.13107"
-       y1="171.63263"
-       x2="69.231834"
-       y2="215.4702" />
+       x1="341.17526"
+       y1="163.95889"
+       x2="97.099594"
+       y2="213.85468" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient2417"
@@ -230,14 +230,14 @@
       <text
          id="text864-3"
          y="176.71843"
-         x="109.55721"
+         x="98.444748"
          style="font-style:normal;font-weight:normal;font-size:6.90735722px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.17268394"
          xml:space="preserve"><tspan
            style="stroke-width:0.17268394"
            y="176.71843"
-           x="109.55721"
+           x="98.444748"
            id="tspan862-4"
-           sodipodi:role="line">It's outline :</tspan></text>
+           sodipodi:role="line">It's outline in Inkscape :</tspan></text>
       <text
          id="text864-3-4"
          y="245.48827"
