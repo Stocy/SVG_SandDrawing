@@ -16,7 +16,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Float.NaN;
+
 public class Main {
+
+    private static boolean isclosed = false;
 
     private static SVGDocument loadSVGDocument(String uri) {
         String parser = XMLResourceDescriptor.getXMLParserClassName();
@@ -41,6 +45,7 @@ public class Main {
             width="1000px";
             height="1000px";
         }
+
         String path = svg_in.getElementsByTagName("path").item(0).getAttributes().getNamedItem("d").getTextContent();
         System.out.println("PATH TEXT :" + path);
         AWTPathProducer pathProducer = new AWTPathProducer();
@@ -48,6 +53,7 @@ public class Main {
         pathParser.setPathHandler(pathProducer);
         pathParser.parse(path);
         Shape ss = pathProducer.getShape();
+        if(path.charAt(path.length()-1)=='Z' || path.charAt(path.length()-1)=='z') isclosed = true;
         return ss;
     }
 
@@ -77,7 +83,7 @@ public class Main {
     static private ArrayList<Quadrilateral> createListOfQuadrilaterals(Shape original_shape, double width){
         PathIterator pathIterator = original_shape.getPathIterator(new AffineTransform());
         double[] currentPathPos = new double[6];
-        ArrayList<Quadrilateral> l = new ArrayList<>();
+        ArrayList<Quadrilateral> listOfQuads = new ArrayList<>();
         List<Point2D> listofPoints = new ArrayList();
         int size = 0;
         while (true){
@@ -85,21 +91,30 @@ public class Main {
             Point2D A = new Point2D.Double(currentPathPos[0],currentPathPos[1]);
             listofPoints.add(A);
             size ++;
+            System.out.println("\ncurrent point is:"+A.getX()+" , "+A.getY());
+            System.out.println("path is done :"+pathIterator.isDone());
             if (size>2){
                 if (size==3){
-                    l.add(Quadrilateral.firstQuadrilateral(listofPoints.get(size-3),listofPoints.get(size-2),listofPoints.get(size-1),width));
+                    listOfQuads.add(Quadrilateral.firstQuadrilateral(listofPoints.get(size-3),listofPoints.get(size-2),listofPoints.get(size-1),width));
                 }
                 if (pathIterator.isDone()){
-                    l.add(Quadrilateral.lastQuadrilateral(l.get(l.size()-1),listofPoints.get(size-3),listofPoints.get(size-2),width));
+                    if(isclosed) {
+                        System.out.println("path is closed");
+                        listOfQuads.add(Quadrilateral.nextQuadrilateral(listOfQuads.get(listOfQuads.size()-1),listofPoints.get(size-2),listofPoints.get(0),listofPoints.get(1),width));
+                    }
+                    else {
+                        System.out.println("path is not closed");
+                        listOfQuads.add(Quadrilateral.lastQuadrilateral(listOfQuads.get(listOfQuads.size()-1),listofPoints.get(size-3),listofPoints.get(size-2),width));
+                    }
                     break;
                 }
                 else {
-                    l.add(Quadrilateral.nextQuadrilateral(l.get(l.size()-1),listofPoints.get(size-3),listofPoints.get(size-2),listofPoints.get(size-1),width));
+                    listOfQuads.add(Quadrilateral.nextQuadrilateral(listOfQuads.get(listOfQuads.size()-1),listofPoints.get(size-3),listofPoints.get(size-2),listofPoints.get(size-1),width));
                 }
             }
             pathIterator.next();
         }
-        return l;
+        return listOfQuads;
     }
 
 

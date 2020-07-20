@@ -148,7 +148,7 @@ public class Quadrilateral {
             Matrix matrix = new Matrix(lhs);
             Matrix m = new Matrix(rhs,2);
             Matrix solve = matrix.solve(m);
-            System.out.println(Arrays.deepToString(solve.getArray()));
+            System.out.println("turn vector : "+Arrays.deepToString(solve.getArray()));
             return new Point2D.Double(solve.get(0,0),solve.get(1,0));
     }
 //DO NOT WORK AS INTEDENDED USE SHAPE INTERSECTION INSTEAD
