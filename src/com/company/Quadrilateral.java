@@ -34,7 +34,7 @@ public class Quadrilateral {
             List<Point2D> result = new ArrayList<>();
             List<Point2D> first_Two = createLeftandRightPoints_atA(A,B,2*width);
             List<Point2D> last_Two = createAverageLeftandRight_atB(A,B,C,width);
-            result.addAll( Arrays.asList(first_Two.get(0),first_Two.get(1),last_Two.get(1),last_Two.get(0)) );
+            result.addAll( Arrays.asList(first_Two.get(1),first_Two.get(0),last_Two.get(0),last_Two.get(1)) );
             return new Quadrilateral(width,result);
         }
 
@@ -148,6 +148,11 @@ public class Quadrilateral {
             Matrix matrix = new Matrix(lhs);
             Matrix m = new Matrix(rhs,2);
             Matrix solve = matrix.solve(m);
+            if (Double.isNaN(solve.getArray()[0][0])) {
+                System.out.println("MATRIX UNSOLVED :");
+                System.out.println("    left : " + Arrays.deepToString(lhs) +
+                        " \n    right : " + Arrays.deepToString(new double[][]{rhs}));
+            }
             System.out.println("turn vector : "+Arrays.deepToString(solve.getArray()));
             return new Point2D.Double(solve.get(0,0),solve.get(1,0));
     }

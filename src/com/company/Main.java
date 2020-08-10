@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.Float.NaN;
@@ -89,28 +90,39 @@ public class Main {
         while (true){
             pathIterator.currentSegment(currentPathPos);
             Point2D A = new Point2D.Double(currentPathPos[0],currentPathPos[1]);
-            listofPoints.add(A);
-            size ++;
-            System.out.println("\ncurrent point is:"+A.getX()+" , "+A.getY());
+            if (currentPathPos[0] != 0.0 && currentPathPos[1] != 0.0) listofPoints.add(A);
+            size = listofPoints.size();
+            System.out.println("\ncurrent point is:"+listofPoints.get(size-1).getX()+" , "+listofPoints.get(size-1).getY());
             System.out.println("path is done :"+pathIterator.isDone());
             if (size>2){
                 if (size==3){
                     listOfQuads.add(Quadrilateral.firstQuadrilateral(listofPoints.get(size-3),listofPoints.get(size-2),listofPoints.get(size-1),width));
                 }
+                else {
+
+
                 if (pathIterator.isDone()){
                     if(isclosed) {
                         System.out.println("path is closed");
-                        listOfQuads.add(Quadrilateral.nextQuadrilateral(listOfQuads.get(listOfQuads.size()-1),listofPoints.get(size-2),listofPoints.get(0),listofPoints.get(1),width));
+                        listOfQuads.remove(0); //remove first quad that is not calculated properly
+                        listofPoints.remove(size-1);
+                        size --;
+                        System.out.println(Arrays.deepToString(listofPoints.toArray()));
+                        listOfQuads.add(Quadrilateral.nextQuadrilateral(listOfQuads.get(listOfQuads.size()-1),listofPoints.get(size-3),listofPoints.get(size-2),listofPoints.get(size-1),width));
+                        listOfQuads.add(Quadrilateral.nextQuadrilateral(listOfQuads.get(listOfQuads.size()-1),listofPoints.get(size-2),listofPoints.get(size-1),listofPoints.get(0),width));
+                        listOfQuads.add(Quadrilateral.nextQuadrilateral(listOfQuads.get(listOfQuads.size()-1),listofPoints.get(size-1),listofPoints.get(0),listofPoints.get(1),width));
+                        listOfQuads.add(Quadrilateral.nextQuadrilateral(listOfQuads.get(listOfQuads.size()-1),listofPoints.get(0),listofPoints.get(1),listofPoints.get(2),width));
                     }
                     else {
                         System.out.println("path is not closed");
-                        listOfQuads.add(Quadrilateral.lastQuadrilateral(listOfQuads.get(listOfQuads.size()-1),listofPoints.get(size-3),listofPoints.get(size-2),width));
+                        listOfQuads.add(Quadrilateral.lastQuadrilateral(listOfQuads.get(listOfQuads.size()-1),listofPoints.get(size-2),listofPoints.get(size-1),width));
                     }
                     break;
                 }
                 else {
                     listOfQuads.add(Quadrilateral.nextQuadrilateral(listOfQuads.get(listOfQuads.size()-1),listofPoints.get(size-3),listofPoints.get(size-2),listofPoints.get(size-1),width));
                 }
+            }
             }
             pathIterator.next();
         }
@@ -120,7 +132,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         double width = 2;
-        double spacing = 1;
+        double spacing = 0.5;
     Shape original_shape = getShapeFromSVG("test3.svg");
     ArrayList<Quadrilateral> l = createListOfQuadrilaterals(original_shape,width);
     PathIterator pathIterator = original_shape.getPathIterator(new AffineTransform());
@@ -163,7 +175,7 @@ public class Main {
                     Area tocut = l.get(i).getArea();
                     tocut.intersect(quadrilateral.getArea());
                     if(!tocut.isEmpty()){
-                        Area a = new Area(quadrilateral.changeQuadrilateralWidth(0.2).getArea());
+                        Area a = new Area(quadrilateral.changeQuadrilateralWidth(spacing).getArea());
                         final_Area.subtract(a);
                         final_Area.add(quadrilateral.getArea());
                         final_Area.add(l.get(index-1).getArea());
@@ -178,6 +190,8 @@ public class Main {
             }
             //final_shape.add(new Area());
         }
+        Area tmp = l.get(0).getArea();
+        final_Area.add(tmp);
 
         svgGraphics2D_out.fill(final_Area);
 
