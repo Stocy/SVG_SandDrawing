@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.Float.NaN;
+import static java.lang.Float.intBitsToFloat;
 
 public class Main {
 
@@ -132,11 +133,10 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         double width = 2;
-        double spacing = 0.5;
-    Shape original_shape = getShapeFromSVG("test3.svg");
+        double spacing = 0.4;
+    Shape original_shape = getShapeFromSVG("test4.svg");
     ArrayList<Quadrilateral> l = createListOfQuadrilaterals(original_shape,width);
     PathIterator pathIterator = original_shape.getPathIterator(new AffineTransform());
-    //TODO CLOSED LOOPS
     /*
     double[] currentPathPos = new double[6];
     List<Point2D> listofPoints = new ArrayList();
@@ -168,30 +168,60 @@ public class Main {
 
 
         Area final_Area = new Area();
-        for (Quadrilateral quadrilateral : l){
-            int index = l.indexOf(quadrilateral);
-            if (index>1){
-                for (int i=0;i<=index-2;i++){
-                    Area tocut = l.get(i).getArea();
-                    tocut.intersect(quadrilateral.getArea());
-                    if(!tocut.isEmpty()){
-                        Area a = new Area(quadrilateral.changeQuadrilateralWidth(spacing).getArea());
-                        final_Area.subtract(a);
-                        final_Area.add(quadrilateral.getArea());
-                        final_Area.add(l.get(index-1).getArea());
+        List<Area> quadsAreas = new ArrayList<Area>();
+        for (int i = 0;i<l.size();i++){
+            quadsAreas.add(l.get(i).getArea());
+        }
+        for (int index = 0;index<quadsAreas.size();index++){
+            Area quadrilateral = quadsAreas.get(index);
+                for (int i=0;i<quadsAreas.size();i++){
+                    List<Integer> nonCheckedAreas = new ArrayList<>();
+                    if (isclosed){
+                        nonCheckedAreas.addAll(Arrays.asList(((index-1)%l.size()+l.size())%l.size(),index,(index+1)%l.size()));
                     }
                     else {
-                        final_Area.add(quadrilateral.getArea());
+                        if(i>=2){
+                            nonCheckedAreas.addAll(Arrays.asList(index,index-1));
+                        }
+                        else {
+                            nonCheckedAreas.addAll(Arrays.asList(0,1));
+                        }
+                    }
+                    if(!nonCheckedAreas.contains(i)){
+                        Area toCutOff = new Area(quadsAreas.get(i));
+                        toCutOff.intersect(quadrilateral);
+                        if(!toCutOff.isEmpty()){
+                            Area largerQuad = new Area(l.get(index).changeQuadrilateralWidth(spacing).getArea());
+                            Area cuttedArea = new Area(quadsAreas.get(i));
+                            cuttedArea.subtract(largerQuad);
+                            quadsAreas.set(i,cuttedArea);
+                            //final_Area.add(quadsAreas.get(index-1));
+                            //final_Area.add(quadrilateral.getArea());
+                        }
+                    }
+
+                    else {
+                        //final_Area.add(quadrilateral.getArea());
                     }
                 }
-            }
-            else {
-                final_Area.add(quadrilateral.getArea());
-            }
+            //else {
+                //final_Area.add(quadrilateral.getArea());
+            //}
+
+
             //final_shape.add(new Area());
         }
-        Area tmp = l.get(0).getArea();
-        final_Area.add(tmp);
+        for (Area quad : quadsAreas){
+            final_Area.add(quad);
+        }
+        if(isclosed){
+            /*
+            not working as intended : create unwanted cuts or remove them, see todo ^^
+            final_Area.subtract(l.get(0).changeQuadrilateralWidth(spacing).getArea());
+            final_Area.add(tmp);
+
+             */
+        }
 
         svgGraphics2D_out.fill(final_Area);
 
